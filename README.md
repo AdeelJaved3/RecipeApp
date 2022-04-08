@@ -8,7 +8,9 @@ RecipeApp is a Full Stack Application that uses Python Flask and MYSQL as the ba
 
 These were the tools used in the application:
 
+```
 Python 3.8
 NodeJs 14.4
 React 16.3.1
 Flask 2.1.1
+```
