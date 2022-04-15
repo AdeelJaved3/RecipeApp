@@ -10,7 +10,7 @@ These were the tools used in the application:
 
 ```
 Python 3.8
-NodeJs 14.4
+Axios 0.26.1
 React 16.3.1
 Flask 2.1.1
 ```
