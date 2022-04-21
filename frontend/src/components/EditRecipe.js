@@ -1,7 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import Table from 'react-bootstrap/esm/Table';
-import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import sendAlert from '../utility';
 
 
