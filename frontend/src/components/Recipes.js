@@ -57,7 +57,7 @@ async function handleButtonDelete(id, recipename, ingredients, instructions, ser
   console.log(body);
 
   const confirmed = window.confirm(`Do you really want to delete ${recipename}`)
-  if(sendAlert(body) && confirmed) {
+  if(confirmed) {
     await axios.post("http://localhost:5000/deleterecipe", body).then(res =>{
       console.log(res.data);
       
