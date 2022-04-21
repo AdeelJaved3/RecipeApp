@@ -1,97 +1,116 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
 import axios from 'axios';
+import sendAlert from "../utility";
+import "./Recipes.scss"; 
 
 
 
-class Recipes extends React.Component{
-    
-  //Setting the state for the initial launch
-    constructor(props) {
-        super(props);
-        this.state = {
-            data: []
-        }
-    }
+function Recipes(){
+  // const [id, setId] = useState('');
+  // const [recipeName, setRecipeName] = useState('');
+  // const [Ingredients, setIngredients] = useState('');
+  // const [Instructions, setInstructions] = useState('');
+  // const [Category, setCategory] = useState('');
+  // const [Notes, setNotes] = useState('');
 
-    //Sets the data to the current state 
-    componentDidMount = async () => {
-        this.setState({data: this.state.data});
-        this.handleGetRecipes();
-    }
+  const [recipes, setRecipes] = useState([])
+  //recipes = this.state
+  //setRecipes = this.setState
 
-    //Gets recipes from Flask backend API using Axios
-    handleGetRecipes = async () => {
-        //Do restful api call here
-        await axios.get('http://localhost:5000/recipes').then(res => {
-          if (res.data.success) {
+  useEffect(()=>{
+    axios.get("http://localhost:5000/recipes").then(res =>{
+      console.log(res)
+      setRecipes(res.data.rows)
+    }).catch(err =>{
+      console.log(err)
+    })
+  }, [])
 
-            const concatArr = this.state.data.concat(res.data.rows)
-            const result = concatArr.filter((item, idx) => concatArr.indexOf(item) === idx)
-            this.setState({data: result});
 
-          }
-          else {
-            console.log("error has occcured")
-          }
-        }).catch(error => {
-          console.log(JSON.stringify(error));
+  function handleButtonClick(id, recipename, ingredients, instructions, servingSize, category, notes){
+    console.log(recipename);
+    console.log(ingredients);
+    //Doing session storage to pass values to the edit recipe page.
+    sessionStorage.setItem('id', id);
+    sessionStorage.setItem('recipename', recipename);
+    sessionStorage.setItem('ingredients', ingredients);
+    sessionStorage.setItem('instructions', instructions);
+    sessionStorage.setItem('servingSize', servingSize);
+    sessionStorage.setItem('category', category);
+    sessionStorage.setItem('notes', notes);
 
-        });
-    }
+    window.location.href="/editRecipe"
+}
 
-    //On button click, sets the state data to the session storage data
-    handleButtonClick = async (id, recipename, ingredients, instructions, servingSize, category, notes) => {
-        console.log(recipename);
-        console.log(ingredients);
-        //Doing session storage to pass values to the edit recipe page.
-        sessionStorage.setItem('id', id);
-        sessionStorage.setItem('recipename', recipename);
-        sessionStorage.setItem('ingredients', ingredients);
-        sessionStorage.setItem('instructions', instructions);
-        sessionStorage.setItem('servingSize', servingSize);
-        sessionStorage.setItem('category', category);
-        sessionStorage.setItem('notes', notes);
+async function handleButtonDelete(id, recipename, ingredients, instructions, servingSize, category, notes){
+  let body = {
+    'id': id,
+    'recipename': recipename,
+    'ingredients': ingredients,
+    'instructions': instructions,
+    'servingSize': servingSize,
+    'category': category,
+    'notes': notes
+  }
+  console.log(body);
 
-        window.location.href="/editRecipe"
-    }
+  const confirmed = window.confirm(`Do you really want to delete ${recipename}`)
+  if(sendAlert(body) && confirmed) {
+    await axios.post("http://localhost:5000/deleterecipe", body).then(res =>{
+      console.log(res.data);
+      
+      if(res.status === 204){
 
-    //On button click, calls Flask backend API to delete the specific recipe from database
-    handleButtonDelete = async (id, recipename, ingredients, instructions, servingSize, category, notes) => {
-        let body = {
-          'id': id,
-          'recipename': recipename,
-          'ingredients': ingredients,
-          'instructions': instructions,
-          'servingSize': servingSize,
-          'category': category,
-          'notes': notes
-        }
-        console.log(body);
-        await axios.post("http://localhost:5000/deleterecipe", body).then(res =>{
-          console.log(res.data);
-          
-          if(res.data.success){
-            console.log(res.data);
-            window.location.href="/"
-          }
-          else {
-            console.log("error has occcured")
-          }
-        }).catch(error =>{
-          console.log(JSON.stringify(error));
-        });
+        window.location.href="/"
       }
+      else {
+        console.log("error has occcured")
+      }
+    }).catch(error =>{
+      console.log(JSON.stringify(error));
+    });
+  }
+  // await axios.post("http://localhost:5000/deleterecipe", body).then(res =>{
+  //   console.log(res.data);
+    
+  //   if(res.status === 204){
+  //     console.log(res.data);
+  //     window.location.href="/"
+  //   }
+  //   else {
+  //     console.log("error has occcured")
+  //   }
+  // }).catch(error =>{
+  //   console.log(JSON.stringify(error));
+  // });
+}
+
+
+
+
+
+  // const fetchRecipes = async () => {
+  //   const response = await axios("http://localhost:5000/recipes");
+  //   console.log(response.data.rows)
+  //   setRecipes([...recipes, response.data.rows])
+  //   console.log(recipes)
+  // };
+  // useEffect(() => {
+  //   fetchRecipes();
+  // }, []);
+  
+
+
 
       //Renders the frontend components
-    render(){
         return(
-            <div>
-                <Table striped bordered hover variant="dark">
+            <div className="header">
+                <Table className="table">
                     <thead>
                         <tr>
-                          <th>ID</th>
+                        <th>ID</th>
                         <th>Recipe Name</th>
                         <th>Ingredients</th>
                         <th>Instructions</th>
@@ -103,7 +122,7 @@ class Recipes extends React.Component{
                         </tr>
                     </thead>
                     <tbody>
-                    {this.state.data.map((item) => (
+                      {recipes.map((item) => (
                         <tr>
                         <td>{item.id}</td>
                         <td>{item.recipename}</td>
@@ -112,18 +131,33 @@ class Recipes extends React.Component{
                         <td>{item.servingSize}</td>
                         <td>{item.category}</td>
                         <td>{item.notes}</td>
-                        <td><Button onClick={this.handleButtonClick.bind(this, item.recipename, item.ingredients, item.instructions, item.servingSize, item.category, item.notes)}>Edit</Button></td>
-                        <td><Button onClick={this.handleButtonDelete.bind(this, item.id, item.recipename, item.ingredients, item.instructions, item.servingSize, item.category, item.notes)}>Delete Recipe</Button></td>
+                        <td><Button onClick={handleButtonClick.bind(this, item.id, item.recipename, item.ingredients, item.instructions, item.servingSize, item.category, item.notes)}>Edit</Button>
+                        </td>
+                        <td><Button onClick={handleButtonDelete.bind(this, item.id, item.recipename, item.ingredients, item.instructions, item.servingSize, item.category, item.notes)}>Delete Recipe</Button></td>
                         </tr>
-                    ))}
+                      ))}
                     </tbody>
                 </Table>
                 
-                <Button href="/addRecipe"> Add Recipe</Button>
+                <Button className="addrecipe" href="/addRecipe"> Add Recipe</Button>
             </div>
         )
     }
-}
+
 
 
 export default Recipes;
+
+/*  
+useEffect(()=>{
+    fetch(
+      `http://localhost:5000/recipes`,{
+        method: "GET"
+      }
+    )
+  }).then(res => res.json())
+    .then(response =>{
+      setRecipes(response.items);
+
+    }).catch(error => console.log(error));
+*/

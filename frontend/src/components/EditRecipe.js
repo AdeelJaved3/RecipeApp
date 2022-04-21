@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import Table from 'react-bootstrap/esm/Table';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
+import sendAlert from '../utility';
 
 
 export default class EditRecipe extends React.Component {
@@ -33,19 +34,25 @@ export default class EditRecipe extends React.Component {
   handleButtonClicked = async () => {
     console.log(this.state)
     let body = this.state
-    await axios.post("http://localhost:5000/editrecipe", body).then(res =>{
-      console.log(res.data);
-      
-      if(res.data.success){
-        console.log(res.data);
-        window.location.href="/"
+    
+    if(sendAlert(body)) {
+      const confirmed = window.confirm("Do you really want to edit this recipe?")
+      if(confirmed){
+        await axios.patch("http://localhost:5000/editrecipe", body).then(res =>{
+          console.log(res.data);
+          
+          if(res.status === 200){
+            window.location.href="/"
+          }
+          else {
+            console.log("error has occcured")
+          }
+        }).catch(error =>{
+          console.log(JSON.stringify(error));
+        });
       }
-      else {
-        console.log("error has occcured")
+        
       }
-    }).catch(error =>{
-      console.log(JSON.stringify(error));
-    });
   }
 
   
@@ -59,32 +66,41 @@ export default class EditRecipe extends React.Component {
       <div>
           <h1>Edit Recipe</h1>
           <form>
-              <label>Recipe Name</label>
-              <input 
-              type="text" 
-              name="recipename" 
-              onChange={this.handleInputChange}
-              defaultValue={sessionStorage.getItem('recipename')}
-              />
 
-              <label>Ingredients</label>
-              <input type="text" name="ingredients" defaultValue={sessionStorage.getItem('ingredients')} onChange={this.handleInputChange} />
+            <h3>
+            <label>Recipe Name</label>
+            <input type="text" name="recipename" onChange={this.handleInputChange}defaultValue={sessionStorage.getItem('recipename')}/>
+            </h3>
 
-              <label>instructions</label>
-              <input type="text" name="instructions" defaultValue={sessionStorage.getItem('instructions')} onChange={this.handleInputChange} />
+            <h3>
+            <label>Ingredients</label>
+            <textarea rows="3" cols="20" type="text" name="ingredients" defaultValue={sessionStorage.getItem('ingredients')} onChange={this.handleInputChange} />
+            </h3>
 
-              <label>Serving Size</label>
-              <input type="text" name="servingSize" defaultValue={sessionStorage.getItem('servingSize')} onChange={this.handleInputChange} />
+            <h3>
+            <label>instructions</label>
+            <textarea rows="3" cols="20" type="text" name="instructions" defaultValue={sessionStorage.getItem('instructions')} onChange={this.handleInputChange} />
+            </h3>
 
-              <label>Category</label>
-              <input type="text" name="category" defaultValue={sessionStorage.getItem('category')} onChange={this.handleInputChange} />
+            <h3>
+            <label>Serving Size</label>
+            <input type="text" name="servingSize" defaultValue={sessionStorage.getItem('servingSize')} onChange={this.handleInputChange} />
+            </h3>
 
-              <label>Notes</label>
-              <input type="text" name="notes" defaultValue={sessionStorage.getItem('notes')} onChange={this.handleInputChange} />
-            </form>
-            <button onClick={this.handleButtonClicked.bind(this)}>
-              Submit
-            </button>
+            <h3>
+            <label>Category</label>
+            <input type="text" name="category" defaultValue={sessionStorage.getItem('category')} onChange={this.handleInputChange} />
+            </h3>
+
+            <h3>
+            <label>Notes</label>
+            <textarea rows="3" cols="20" type="text" name="notes" defaultValue={sessionStorage.getItem('notes')} onChange={this.handleInputChange} />
+            </h3>
+
+          </form>
+          <button onClick={this.handleButtonClicked.bind(this)}>
+            Submit
+          </button>
       </div>
     );
   }
