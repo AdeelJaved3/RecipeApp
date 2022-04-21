@@ -87,8 +87,15 @@ export default class EditRecipe extends React.Component {
 
             <h3>
             <label>Category</label>
-            <input type="text" name="category" defaultValue={sessionStorage.getItem('category')} onChange={this.handleInputChange} />
+            <input list="category" name="category" defaultValue={sessionStorage.getItem('category')} onChange={this.handleInputChange} />
             </h3>
+
+            <datalist id ="category">
+              <option value = "Sandwich"/>
+              <option value = "Pasta"/>
+              <option value = "Soup"/>
+              <option value = "Salad"/>
+            </datalist>
 
             <h3>
             <label>Notes</label>
