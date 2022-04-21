@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import sendAlert from '../utility';
-import "./addRecipe.scss"; 
+
 
 export default class AddRecipe extends React.Component {
   //Setting the state for the initial launch

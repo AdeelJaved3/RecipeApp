@@ -1,31 +1,34 @@
+$borderColor: solid rgb(0, 0, 0);
+$btnBackgroundColor: green;
+$hoverBtnColor: rgb(79, 145, 79);
 
 .table{
-    border : 3px solid rgb(0, 0, 0);
+    border : 3px $borderColor;
     border-collapse: collapse;
 }
 
 tr {
   height: 20px;
-  border: 1px solid black;
+  border: 1px $borderColor;
 }
 
 th {
   height: 20px;
-  border: 1px solid black;
+  border: 1px $borderColor;
   background-color: rgb(196, 194, 194);
   padding: 2px;
 }
 
 td {
   height: 20px;
-  border: 1px solid black;
+  border: 1px $borderColor;
   background-color: white;
   color: black;
   padding: 2px;
 }
 
 button{
-  background-color: green;
+  background-color: $btnBackgroundColor;
   border: none;
   color: white;
   padding: 15px 32px;
@@ -37,7 +40,7 @@ button{
 }
 
 .addrecipe{
-  background-color: green;
+  background-color: $btnBackgroundColor;
   border: none;
   color: white;
   padding: 15px 32px;
@@ -49,10 +52,10 @@ button{
 }
 
 .addrecipe:hover {
-  background-color: rgb(79, 145, 79);
+  background-color: $hoverBtnColor;
 }
 
 button:hover{
-  background-color: rgb(79, 145, 79);
+  background-color: $hoverBtnColor;
 }
 
